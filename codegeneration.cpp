@@ -16,7 +16,7 @@ void CodeGenerator::visitClassNode(ClassNode* node) {
 }
 
 void CodeGenerator::visitMethodNode(MethodNode* node) {
-    // WRITEME: Replace with code if necessary
+        
 }
 
 void CodeGenerator::visitMethodBodyNode(MethodBodyNode* node) {
@@ -40,15 +40,56 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 }
 
 void CodeGenerator::visitCallNode(CallNode* node) {
-    // WRITEME: Replace with code if necessary
+    node->visit_children(this);
 }
 
 void CodeGenerator::visitIfElseNode(IfElseNode* node) {
-    // WRITEME: Replace with code if necessary
+    int l1 = nextLabel();
+    int l2 = nextLabel();
+
+    node->expression->accept(this);
+
+    std::cout << "  # IfElse" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  cmp %edx, 1" << std::endl;
+    std::cout << "  je L" << l1 << std::endl;
+
+    auto i = node->statement_list_2->begin();
+    for(; i != node->statement_list_2->end(); ++i) {
+        (*i)->accept(this);
+    }
+
+    std::cout << "  goto L" << l2 << std::endl;
+    std::cout << "  L" << l1 << ":" << std::endl;
+
+    auto j = node->statement_list_1->begin();
+    for(; j != node->statement_list_1->end(); ++j) {
+        (*j)->accept(this);
+    }
+
+    std::cout << "  L" << l2 << ":" << std::endl;
 }
 
 void CodeGenerator::visitWhileNode(WhileNode* node) {
-    // WRITEME: Replace with code if necessary
+    int l1 = nextLabel();
+    int l2 = nextLabel();
+
+    std::cout << "  # While" << std::endl;
+    std::cout << "  L" << l1 << ":" << std::endl;
+
+    node->expression->accept(this);
+
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  cmp %edx, 0" << std::endl;
+    std::cout << "  je L" << l2 << std::endl;
+
+    auto i = node->statement_list->begin();
+    for(; i != node->statement_list->end(); ++i) {
+        (*i)->accept(this);
+    }
+
+    std::cout << "  goto L" << l1 << std::endl;
+    std::cout << "  L" << l2 << ":" << std::endl;
 }
 
 void CodeGenerator::visitPrintNode(PrintNode* node) {
@@ -56,7 +97,21 @@ void CodeGenerator::visitPrintNode(PrintNode* node) {
 }
 
 void CodeGenerator::visitDoWhileNode(DoWhileNode* node) {
-    // WRITEME: Replace with code if necessary
+    int l1 = nextLabel();
+
+    std::cout << "  # DoWhile" << std::endl;
+    std::cout << "  L" << l1 << ":" << std::endl;
+
+    auto i = node->statement_list->begin();
+    for(; i != node->statement_list->end(); ++i) {
+        (*i)->accept(this);
+    }
+
+    node->expression->accept(this);
+
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  cmp %edx, 1" << std::endl;
+    std::cout << "  je L" << l1 << std::endl;
 }
 
 void CodeGenerator::visitPlusNode(PlusNode* node) {
@@ -82,7 +137,7 @@ void CodeGenerator::visitTimesNode(TimesNode* node) {
     std::cout << "  # Times" << std::endl;
     std::cout << "  pop %eax" << std::endl;
     std::cout << "  pop %ecx" << std::endl;
-    std::cout << "  mul %ecx" << std::endl;
+    std::cout << "  imul %ecx" << std::endl;
     std::cout << "  push %eax" << std::endl;
 }
 
@@ -92,7 +147,7 @@ void CodeGenerator::visitDivideNode(DivideNode* node) {
     std::cout << "  mov %edx, 0" << std::endl;
     std::cout << "  pop %eax" << std::endl;
     std::cout << "  pop %ecx" << std::endl;
-    std::cout << "  div %ecx" << std::endl;
+    std::cout << "  idiv %ecx" << std::endl;
     std::cout << "  push %eax" << std::endl;
     // Dividend: EDX:EAX
     // Divisor:  ECX
@@ -101,8 +156,8 @@ void CodeGenerator::visitDivideNode(DivideNode* node) {
 
 void CodeGenerator::visitGreaterNode(GreaterNode* node) {
     node->visit_children(this);
-    bool l1 = nextLabel();
-    bool l2 = nextLabel();
+    int l1 = nextLabel();
+    int l2 = nextLabel();
 
     std::cout << "  # Greater" << std::endl;
     std::cout << "  pop %edx" << std::endl;
@@ -117,8 +172,8 @@ void CodeGenerator::visitGreaterNode(GreaterNode* node) {
 
 void CodeGenerator::visitGreaterEqualNode(GreaterEqualNode* node) {
     node->visit_children(this);
-    bool l1 = nextLabel();
-    bool l2 = nextLabel();
+    int l1 = nextLabel();
+    int l2 = nextLabel();
 
     std::cout << "  # GreaterEqual" << std::endl;
     std::cout << "  pop %edx" << std::endl;
@@ -133,8 +188,8 @@ void CodeGenerator::visitGreaterEqualNode(GreaterEqualNode* node) {
 
 void CodeGenerator::visitEqualNode(EqualNode* node) {
     node->visit_children(this);
-    bool l1 = nextLabel();
-    bool l2 = nextLabel();
+    int l1 = nextLabel();
+    int l2 = nextLabel();
 
     std::cout << "  # Equal" << std::endl;
     std::cout << "  pop %edx" << std::endl;
@@ -184,7 +239,22 @@ void CodeGenerator::visitNegationNode(NegationNode* node) {
 }
 
 void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
-    // WRITEME: Replace with code if necessary
+    IdentifierNode* identifier_1;
+    IdentifierNode* identifier_2;
+    std::list<ExpressionNode*>* expression_list;
+
+    int l1 = nextLabel();
+    int l2 = nextLabel();
+
+    std::cout << "  # MethodCall" << std::endl;
+
+    auto i = node->expression->rbegin();
+    for(; i != node->expression->rend(); ++i) {
+        (*i)->accept(this);
+    }
+
+    std::cout << "  call " << std::endl;
+    /* TODO */
 }
 
 void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
