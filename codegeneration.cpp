@@ -78,54 +78,73 @@ void CodeGenerator::visitMinusNode(MinusNode* node) {
 }
 
 void CodeGenerator::visitTimesNode(TimesNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Multiply" << std::endl;
-    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  # Times" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  pop %ecx" << std::endl;
+    std::cout << "  mul %ecx" << std::endl;
     std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitDivideNode(DivideNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
-    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  # Divide" << std::endl;
+    std::cout << "  mov %edx, 0" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  pop %ecx" << std::endl;
+    std::cout << "  div %ecx" << std::endl;
     std::cout << "  push %eax" << std::endl;
+    // Dividend: EDX:EAX
+    // Divisor:  ECX
+    // Quotient: EAX
 }
 
 void CodeGenerator::visitGreaterNode(GreaterNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
+    bool l1 = nextLabel();
+    bool l2 = nextLabel();
 
+    std::cout << "  # Greater" << std::endl;
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
-    std::cout << "  push %eax" << std::endl;
+    std::cout << "  cmp %eax, %edx" << l1 << std::endl;
+    std::cout << "  jg L" << l1 << std::endl;
+    std::cout << "  push 0" << std::endl;
+    std::cout << "  goto L" << l2 << std::endl;
+    std::cout << "  L" << l1 << ": push 1" << std::endl;
+    std::cout << "  L" << l2 << ": " << std::endl;
 }
 
 void CodeGenerator::visitGreaterEqualNode(GreaterEqualNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
+    bool l1 = nextLabel();
+    bool l2 = nextLabel();
+
+    std::cout << "  # GreaterEqual" << std::endl;
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
-    std::cout << "  push %eax" << std::endl;
+    std::cout << "  cmp %eax, %edx" << l1 << std::endl;
+    std::cout << "  jge L" << l1 << std::endl;
+    std::cout << "  push 0" << std::endl;
+    std::cout << "  goto L" << l2 << std::endl;
+    std::cout << "  L" << l1 << ": push 1" << std::endl;
+    std::cout << "  L" << l2 << ": " << std::endl;
 }
 
 void CodeGenerator::visitEqualNode(EqualNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
+    bool l1 = nextLabel();
+    bool l2 = nextLabel();
+
+    std::cout << "  # Equal" << std::endl;
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
-    std::cout << "  push %eax" << std::endl;
+    std::cout << "  cmp %edx, %eax" << l1 << std::endl;
+    std::cout << "  je L" << l1 << std::endl;
+    std::cout << "  push 0" << std::endl;
+    std::cout << "  goto L" << l2 << std::endl;
+    std::cout << "  L" << l1 << ": push 1" << std::endl;
+    std::cout << "  L" << l2 << ": " << std::endl;
 }
 
 void CodeGenerator::visitAndNode(AndNode* node) {
