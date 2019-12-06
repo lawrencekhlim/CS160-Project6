@@ -4,6 +4,9 @@
 // you will complete to generate the x86 assembly code. Not
 // all functions must have code, many may be left empty.
 
+
+
+
 void CodeGenerator::visitProgramNode(ProgramNode* node) {
     // WRITEME: Replace with code if necessary
 }
@@ -57,7 +60,6 @@ void CodeGenerator::visitDoWhileNode(DoWhileNode* node) {
 }
 
 void CodeGenerator::visitPlusNode(PlusNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
     std::cout << "  # Plus" << std::endl;
     std::cout << "  pop %edx" << std::endl;
@@ -67,19 +69,18 @@ void CodeGenerator::visitPlusNode(PlusNode* node) {
 }
 
 void CodeGenerator::visitMinusNode(MinusNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
+    std::cout << "  # Subtract" << std::endl;
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  sub %edx, %eax" << std::endl;
     std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitTimesNode(TimesNode* node) {
     // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
+    std::cout << "  # Multiply" << std::endl;
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
     std::cout << "  add %edx, %eax" << std::endl;
@@ -100,6 +101,7 @@ void CodeGenerator::visitGreaterNode(GreaterNode* node) {
     // WRITEME: Replace with code if necessary
     node->visit_children(this);
     std::cout << "  # Plus" << std::endl;
+
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
     std::cout << "  add %edx, %eax" << std::endl;
@@ -127,37 +129,39 @@ void CodeGenerator::visitEqualNode(EqualNode* node) {
 }
 
 void CodeGenerator::visitAndNode(AndNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
+    std::cout << "  # And" << std::endl;
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  and %edx, %eax" << std::endl;
     std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitOrNode(OrNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
+    std::cout << "  # Or" << std::endl;
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  or %edx, %eax" << std::endl;
     std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitNotNode(NotNode* node) {
-    // WRITEME: Replace with code if necessary
     node->visit_children(this);
-    std::cout << "  # Plus" << std::endl;
-    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  # Not" << std::endl;
+    std::cout << "  mov %edx, 1" << std::endl;
     std::cout << "  pop %eax" << std::endl;
-    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  xor %edx, %eax" << std::endl;
     std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitNegationNode(NegationNode* node) {
-    // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Negation" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  mov %eax, 0" << std::endl;
+    std::cout << "  sub %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
