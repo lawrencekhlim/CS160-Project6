@@ -58,42 +58,102 @@ void CodeGenerator::visitDoWhileNode(DoWhileNode* node) {
 
 void CodeGenerator::visitPlusNode(PlusNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitMinusNode(MinusNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitTimesNode(TimesNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitDivideNode(DivideNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitGreaterNode(GreaterNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitGreaterEqualNode(GreaterEqualNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitEqualNode(EqualNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitAndNode(AndNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitOrNode(OrNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitNotNode(NotNode* node) {
     // WRITEME: Replace with code if necessary
+    node->visit_children(this);
+    std::cout << "  # Plus" << std::endl;
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
+    std::cout << "  add %edx, %eax" << std::endl;
+    std::cout << "  push %eax" << std::endl;
 }
 
 void CodeGenerator::visitNegationNode(NegationNode* node) {
