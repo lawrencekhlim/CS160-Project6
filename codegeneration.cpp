@@ -13,10 +13,19 @@ void CodeGenerator::visitProgramNode(ProgramNode* node) {
 
 void CodeGenerator::visitClassNode(ClassNode* node) {
     // WRITEME: Replace with code if necessary
+    currentClassName = node->identifier_1->name;
+
 }
 
 void CodeGenerator::visitMethodNode(MethodNode* node) {
-        
+    currentMethodName = node->identifier->name;
+    cout << identifier->name << ": " << std::endl;
+    cout << "push %ebp" << std::endl;
+    cout << "mov %esp %ebp" << std::endl;
+    int offset = -4*(*(*classTable)[currentClassName]->methods)[currentMethodName]->localsSize;
+    cout << "sub %esp, " << offset << std::endl;
+    node->visit_children (this);
+
 }
 
 void CodeGenerator::visitMethodBodyNode(MethodBodyNode* node) {
@@ -204,7 +213,7 @@ void CodeGenerator::visitEqualNode(EqualNode* node) {
 
 void CodeGenerator::visitAndNode(AndNode* node) {
     node->visit_children(this);
-    std::cout << "  # And" << std::endl;
+    std::cout << "  # And" << std::endl;	
     std::cout << "  pop %edx" << std::endl;
     std::cout << "  pop %eax" << std::endl;
     std::cout << "  and %edx, %eax" << std::endl;
@@ -248,13 +257,15 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 
     std::cout << "  # MethodCall" << std::endl;
 
-    auto i = node->expression->rbegin();
-    for(; i != node->expression->rend(); ++i) {
+    auto i = node->expression_list->rbegin();
+    for(; i != node->expression_list->rend(); ++i) {
         (*i)->accept(this);
     }
 
-    std::cout << "  call " << std::endl;
-    /* TODO */
+    std::cout << "  call " << identifier_2->name << std::endl;
+    // TODO: Specify name space of identifier_2
+    //
+    std::cout << "  add %esp, " << 4 * node->expression_list->size() << std::endl; 
 }
 
 void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
