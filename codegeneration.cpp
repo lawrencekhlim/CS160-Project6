@@ -237,8 +237,8 @@ void CodeGenerator::visitDivideNode(DivideNode* node) {
 	node->visit_children(this);
 	std::cout << "  # Divide" << std::endl;
 	std::cout << "  mov $0, %edx" << std::endl;
-	std::cout << "  pop %eax" << std::endl;
 	std::cout << "  pop %ecx" << std::endl;
+	std::cout << "  pop %eax" << std::endl;
 	std::cout << "  idiv %ecx" << std::endl;
 	std::cout << "  push %eax" << std::endl;
 	// Dividend: EDX:EAX
