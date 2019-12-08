@@ -19,17 +19,29 @@ void CodeGenerator::visitClassNode(ClassNode* node) {
 
 void CodeGenerator::visitMethodNode(MethodNode* node) {
     currentMethodName = node->identifier->name;
-    cout << identifier->name << ": " << std::endl;
-    cout << "push %ebp" << std::endl;
-    cout << "mov %esp %ebp" << std::endl;
-    int offset = -4*(*(*classTable)[currentClassName]->methods)[currentMethodName]->localsSize;
-    cout << "sub %esp, " << offset << std::endl;
+    std::cout << currentClassName << "_" << currentMethodName << ": " << std::endl;
+    std::cout << "  push %ebp" << std::endl;
+    std::cout << "  mov %esp, %ebp" << std::endl;
+    int offset = 4*(*(*classTable)[currentClassName].methods)[currentMethodName].localsSize;
+    std::cout << "  sub %esp, " << offset << std::endl;
+
+    std::cout << "  push %ebx" << std::endl;
+    std::cout << "  push %esi" << std::endl;
+    std::cout << "  push %edi" << std::endl;
+
     node->visit_children (this);
 
+    std::cout << "  pop %edi" << std::endl;
+    std::cout << "  pop %esi" << std::endl;
+    std::cout << "  pop %ebx" << std::endl;
+    
+    std::cout << "  add %esp, " << offset << std::endl;
+    std::cout << "  pop %ebp" << std::endl;
+    std::cout << "  ret" << std::endl;
 }
 
 void CodeGenerator::visitMethodBodyNode(MethodBodyNode* node) {
-    // WRITEME: Replace with code if necessary
+    node->visit_children(this);
 }
 
 void CodeGenerator::visitParameterNode(ParameterNode* node) {
@@ -38,14 +50,34 @@ void CodeGenerator::visitParameterNode(ParameterNode* node) {
 
 void CodeGenerator::visitDeclarationNode(DeclarationNode* node) {
     // WRITEME: Replace with code if necessary
+    // ClassNode
+    // MethodNode - Handled inside MethodNode
 }
 
 void CodeGenerator::visitReturnStatementNode(ReturnStatementNode* node) {
-    // WRITEME: Replace with code if necessary
+    std::cout << "  # Return Statement" << std::endl;
+    node->visit_children(this);
+    std::cout << "  pop %eax" << endl;
 }
 
 void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
-    // WRITEME: Replace with code if necessary
+    // Several cases: 
+    // Local variable
+    // Class variable
+    // Superclass variables
+    node->visit_children (this);
+    if (node->identifier_node_2 == NULL) {
+        // Local variable
+	// Find variable on stack first
+	
+        int offset = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables)[node->identifire_node_1->name].offset;
+	std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
+	std::cout << "  add 4, %esp" << std::endl;
+    } 
+    else {
+        // Class variable or superclass variable
+	
+    }    
 }
 
 void CodeGenerator::visitCallNode(CallNode* node) {
@@ -257,6 +289,10 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 
     std::cout << "  # MethodCall" << std::endl;
 
+    std::cout << "  push %eax" << std::endl;
+    std::cout << "  push %ecx" << std::endl;
+    std::cout << "  push %edx" << std::endl;
+
     auto i = node->expression_list->rbegin();
     for(; i != node->expression_list->rend(); ++i) {
         (*i)->accept(this);
@@ -265,7 +301,12 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
     std::cout << "  call " << identifier_2->name << std::endl;
     // TODO: Specify name space of identifier_2
     //
+    // Below is deallocating parameters
     std::cout << "  add %esp, " << 4 * node->expression_list->size() << std::endl; 
+
+    std::cout << "  pop %edx" << std::endl;
+    std::cout << "  pop %ecx" << std::endl;
+    std::cout << "  pop %eax" << std::endl;
 }
 
 void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
