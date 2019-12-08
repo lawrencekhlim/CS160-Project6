@@ -77,7 +77,7 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 		// Local variable
 		// Find variable on stack first
 		auto localTable = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
-		if (localTable->find(node->identifier_1->name) != localTable->end()) {
+		if (localTable.find(node->identifier_1->name) != localTable.end()) {
 			int offset = localTable[node->identifier_1->name].offset;
 			std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
 			std::cout << "  add $4, %esp" << std::endl;
@@ -91,7 +91,7 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 	else {
 
 		auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
-		int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offse
+		int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
 		
 		int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 		auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
@@ -169,7 +169,7 @@ void CodeGenerator::visitWhileNode(WhileNode* node) {
 }
 
 void CodeGenerator::visitPrintNode(PrintNode* node) {
-	node->visitchildren(this);
+	node->visit_children(this);
 	std::cout << "  push $printstr" << std::endl;
 	std::cout << "  call printf" << std::endl;
 }
@@ -343,18 +343,19 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 	else {
 		
 		auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
-		if (localVars.find(node->identifier->name) != localVars.end()) {
+		auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
+
+		if (localVars.find(node->identifier_1->name) != localVars.end()) {
 			// local var
-			int localVarOffset = localVars[node->identifier->name].offset;
+			int localVarOffset = localVars[node->identifier_1->name].offset;
 			std::cout << "  push " << localVarOffset << "(%ebp)" << std::endl;
 		}
 		else {
 			// member var
-			auto memberOff = (*(*classTable)[className].members)[node->identifier->name].offset;
+			auto memberOff = (*(*classTable)[className].members)[node->identifier_1->name].offset;
 			std::cout << "  mov 8(%ebp), %eax" << std::endl;
 			std::cout << "  push " << memberOff << "(%eax)" << std::endl;
 		}
-		auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
 		
 		while (className != "") {
 			if ((*classTable)[className].methods->find(node->identifier_2->name) != (*classTable)[className].methods->end()) {
@@ -441,7 +442,8 @@ void CodeGenerator::visitNewNode(NewNode* node) {
 
 	// Constructor doesn't exist
 	ClassInfo class_info = (*classTable)[node->identifier->name];
-	if (class_info.methods->find(className) == class_info.methods->end()) {
+
+	if (class_info.methods->find(node->identifier->name) == class_info.methods->end()) {
 		std::cout << "  push $" << size << std::endl;
 		std::cout << "  call malloc" << std::endl;
 		std::cout << "  add $4, %esp" << std::endl;
