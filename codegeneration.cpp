@@ -10,7 +10,7 @@
 void CodeGenerator::visitProgramNode(ProgramNode* node) {
 	// WRITEME: Replace with code if necessary
 	std::cout << ".data" << std::endl;
-	std::cout << "printstr: .asciz \"%d\n\"" << std::endl;
+	std::cout << "printstr: .asciz \"%d\\n\"" << std::endl;
 	std::cout << ".text" << std::endl;
 	std::cout << ".globl Main_main" << std::endl;
 	node->visit_children(this);
