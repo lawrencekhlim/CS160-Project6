@@ -407,34 +407,32 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 
 void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
 	auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
-
+	int offset = 0;
 	while (className != "") {
 		if ((*classTable)[className].members->find(node->identifier_2->name) != (*classTable)[className].members->end()) {
-
-			int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
+			offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 			// std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
 			// std::cout << "  add $4, %esp" << std::endl;
-			
-			auto className = currentClassName;
-			auto localVars = (*(*(*classTable)[className].methods)[currentMethodName].variables);
-			if (localVars.find(node->identifier_1->name) != localVars.end()) {
-				// local var
-				int localVarOffset = localVars[node->identifier_1->name].offset;
-				std::cout << "  mov " << localVarOffset << "(%ebp), %eax" << std::endl;
-				std::cout << "  push " << offset << "(%eax)" << std::endl;
-			}
-			else {
-				// member var
-				auto memberOff = (*(*classTable)[className].members)[node->identifier_1->name].offset;
-				std::cout << "  mov 8(%ebp), %eax" << std::endl;
-				std::cout << "  mov " << memberOff << "(%eax), %eax" << std::endl;
-				std::cout << "  push " << offset <<  "(%eax)" << std::endl;
-			}
-
 			break;
 		}
 		className = (*classTable)[className].superClassName;
 	}
+
+	auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
+	if (localVars.find(node->identifier_1->name) != localVars.end()) {
+		// local var
+		int localVarOffset = localVars[node->identifier_1->name].offset;
+		std::cout << "  mov " << localVarOffset << "(%ebp), %eax" << std::endl;
+		std::cout << "  push " << offset << "(%eax)" << std::endl;
+	}
+	else {
+		// member var
+		auto memberOff = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
+		std::cout << "  mov 8(%ebp), %eax" << std::endl;
+		std::cout << "  mov " << memberOff << "(%eax), %eax" << std::endl;
+		std::cout << "  push " << offset <<  "(%eax)" << std::endl;
+	}
+
 }
 
 void CodeGenerator::visitVariableNode(VariableNode* node) {
