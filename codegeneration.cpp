@@ -80,12 +80,14 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 		auto localTable = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
 		if (localTable.find(node->identifier_1->name) != localTable.end()) {
 			int offset = localTable[node->identifier_1->name].offset;
-			std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
+			std::cout << "  mov 0(%esp), %eax" << std::endl;
+			std::cout << "  mov %eax, " << offset << "(%ebp)" << std::endl;
 			std::cout << "  add $4, %esp" << std::endl;
 		}
 		else {
 			int offset = (*(*classTable)[currentClassName].members)[node->identifier_2->name].offset;
-			std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
+			std::cout << "  mov 0(%esp), %eax"  << std::endl;
+			std::cout << "  mov %eax, " << offset << "(%ebp)" << std::endl;
 			std::cout << "  add $4, %esp" << std::endl;
 		}
 	}
@@ -234,7 +236,7 @@ void CodeGenerator::visitTimesNode(TimesNode* node) {
 void CodeGenerator::visitDivideNode(DivideNode* node) {
 	node->visit_children(this);
 	std::cout << "  # Divide" << std::endl;
-	std::cout << "  mov %edx, $0" << std::endl;
+	std::cout << "  mov $0, %edx" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
 	std::cout << "  pop %ecx" << std::endl;
 	std::cout << "  idiv %ecx" << std::endl;
