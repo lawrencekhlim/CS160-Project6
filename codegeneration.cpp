@@ -255,8 +255,8 @@ void CodeGenerator::visitGreaterNode(GreaterNode* node) {
 	int l2 = nextLabel();
 
 	std::cout << "  # Greater" << std::endl;
-	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
+	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  cmp %eax, %edx" << std::endl;
 	std::cout << "  jg L" << l1 << std::endl;
 	std::cout << "  push $0" << std::endl;
@@ -271,8 +271,8 @@ void CodeGenerator::visitGreaterEqualNode(GreaterEqualNode* node) {
 	int l2 = nextLabel();
 
 	std::cout << "  # GreaterEqual" << std::endl;
-	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
+	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  cmp %eax, %edx" << std::endl;
 	std::cout << "  jge L" << l1 << std::endl;
 	std::cout << "  push $0" << std::endl;
