@@ -86,7 +86,7 @@ CompoundType verifyVariable (TypeCheck* obj, IdentifierNode* node, std::string c
 
   // Find member variable
   std::string className = currentClassName;
-  while (className != "") {
+  if (className != "") {
     if ((*classTable)[className].members->find(node->name) != (*classTable)[className].members->end()) {
       node->basetype = (*(*classTable)[className].members)[node->name].type.baseType;
       return (*(*classTable)[className].members)[node->name].type;
@@ -152,6 +152,7 @@ void TypeCheck::visitClassNode(ClassNode* node) {
   currentMemberOffset = 0;
   currentParameterOffset = 0;
   currentLocalOffset = 0;
+  currentClassName.membersSize = 0;
   currentClassName = node->identifier_1->name;
   currentMethodTable = new MethodTable();
   currentVariableTable = new VariableTable();
@@ -163,9 +164,20 @@ void TypeCheck::visitClassNode(ClassNode* node) {
 
   std::string superclass = (node->identifier_2) ? node->identifier_2->name : "";
 
+  // Inherit superclass members
+  if (superclass != "") {
+    for (auto const& member : (*classTable)[superclass].members) {
+      (*currentVariableTable)[member.first] = member.second;
+      currentMemberOffset += 4;
+    }
+  }
+
   ClassInfo class_info = {superclass, currentMethodTable, currentVariableTable, (int)node->method_list->size() * 4};
   (*classTable)[node->identifier_1->name] = class_info;
   node->visit_children(this);
+
+  // Set class members size to total offset
+  currentClassName.membersSize = currentMemberOffset;
 
   if (node->identifier_1->name == "Main") {
     if (node->declaration_list->size() != 0) {
