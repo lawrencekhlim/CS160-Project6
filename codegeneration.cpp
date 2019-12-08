@@ -386,7 +386,7 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 	}
 
 	std::cout << "  mov %eax, %ecx" << std::endl;
-	std::cout << "  add %esp, $" << 4 * (node->expression_list->size() + 1) << std::endl; 
+	std::cout << "  add $" << 4 * (node->expression_list->size() + 1) << ", %esp" << std::endl; 
 	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  mov 4(%esp), %eax" << std::endl;
 	std::cout << "  mov %ecx, 4(%esp)" << std::endl;
@@ -488,7 +488,7 @@ void CodeGenerator::visitNewNode(NewNode* node) {
 
 		// Below is deallocating parameters
 		std::cout << "  mov (%esp), %ecx" << std::endl;
-		std::cout << "  add %esp, $" << 4 * (node->expression_list->size() + 1) << std::endl; 
+		std::cout << "  add $" << 4 * (node->expression_list->size() + 1) << ", %esp" << std::endl; 
 		std::cout << "  pop %edx" << std::endl;
 		std::cout << "  mov 4(%esp), %eax" << std::endl;
 		std::cout << "  mov %ecx, 4(%esp)" << std::endl;
