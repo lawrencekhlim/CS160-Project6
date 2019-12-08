@@ -43,7 +43,8 @@ void CodeGenerator::visitMethodNode(MethodNode* node) {
 	std::cout << "  pop %esi" << std::endl;
 	std::cout << "  pop %ebx" << std::endl;
 	
-	std::cout << "  add %esp, $" << offset << std::endl;
+	std::cout << "  add $" << offset << ", %esp"<< std::endl;
+	std::cout << "  mov %ebp, %esp" << std::endl;
 	std::cout << "  pop %ebp" << std::endl;
 	std::cout << "  ret" << std::endl;
 }
@@ -169,9 +170,20 @@ void CodeGenerator::visitWhileNode(WhileNode* node) {
 }
 
 void CodeGenerator::visitPrintNode(PrintNode* node) {
+	
+	std::cout << "  push %eax" << std::endl;
+	std::cout << "  push %ecx" << std::endl;
+	std::cout << "  push %edx" << std::endl;
+	
 	node->visit_children(this);
 	std::cout << "  push $printstr" << std::endl;
 	std::cout << "  call printf" << std::endl;
+
+	std::cout << "  add $4, %esp" << std::endl;
+
+	std::cout << "  pop %edx" << std::endl;
+	std::cout << "  pop %ecx" << std::endl;
+	std::cout << "  pop %eax" << std::endl;
 }
 
 void CodeGenerator::visitDoWhileNode(DoWhileNode* node) {
