@@ -74,6 +74,7 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 	// Class variable
 	// Superclass variables
 	node->visit_children (this);
+	std::cout << "  # Assignment " << std::endl;
 	if (node->identifier_2 == NULL) {
 		// Local variable
 		// Find variable on stack first
@@ -85,7 +86,7 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 			std::cout << "  add $4, %esp" << std::endl;
 		}
 		else {
-			int offset = (*(*classTable)[currentClassName].members)[node->identifier_2->name].offset;
+			int offset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
 			std::cout << "  mov 0(%esp), %eax"  << std::endl;
 			std::cout << "  mov %eax, " << offset << "(%ebp)" << std::endl;
 			std::cout << "  add $4, %esp" << std::endl;
@@ -95,7 +96,6 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 		auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
 		if (localVars.find(node->identifier_1->name) != localVars.end()) {
 			auto className = localVars[node->identifier_1->name].type.objectClassName;
-			int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
 		
 			int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 			// local var
@@ -107,7 +107,6 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 		}
 		else {
 			auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
-			int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
 		
 			int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 			// member var
@@ -212,7 +211,7 @@ void CodeGenerator::visitDoWhileNode(DoWhileNode* node) {
 
 	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  mov $1, %eax" << std::endl;
-	std::cout << "  cmp %edx, $eax" << std::endl;
+	std::cout << "  cmp %edx, %eax" << std::endl;
 	std::cout << "  je L" << l1 << std::endl;
 }
 
