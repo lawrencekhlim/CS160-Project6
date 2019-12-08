@@ -544,7 +544,7 @@ void TypeCheck::visitNewNode(NewNode* node) {
 
   if (class_info.methods->find(className) == class_info.methods->end()) {
     // Constructor doesn't exist: check 0 argument
-    if (node->expression_list->size() != 0) {
+    if (node->expression_list != NULL && node->expression_list->size() != 0) {
       typeError (argument_number_mismatch);
     }
   }
