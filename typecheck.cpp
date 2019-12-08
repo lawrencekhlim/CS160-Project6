@@ -152,13 +152,13 @@ void TypeCheck::visitClassNode(ClassNode* node) {
   currentMemberOffset = 0;
   currentParameterOffset = 0;
   currentLocalOffset = 0;
-  currentClassName.membersSize = 0;
+  (*classTable)[currentClassName].membersSize = 0;
   currentClassName = node->identifier_1->name;
   currentMethodTable = new MethodTable();
   currentVariableTable = new VariableTable();
 
   // Check if superclass exists
-  if (node->identifier_2 != NULL && classTable->find(node->identifier_2->name) == classTable->end()) {
+  if (node->identifier_2 != NULL && classTable->find(node->identifier_2->name) == classTable->end()){
     typeError(undefined_class);
   }
 
@@ -166,7 +166,7 @@ void TypeCheck::visitClassNode(ClassNode* node) {
 
   // Inherit superclass members
   if (superclass != "") {
-    for (auto const& member : (*classTable)[superclass].members) {
+    for (auto const& member : (*(*classTable)[superclass].members)) {
       (*currentVariableTable)[member.first] = member.second;
       currentMemberOffset += 4;
     }
@@ -177,8 +177,8 @@ void TypeCheck::visitClassNode(ClassNode* node) {
   node->visit_children(this);
 
   // Set class members size to total offset
-  currentClassName.membersSize = currentMemberOffset;
-
+  (*classTable)[currentClassName].membersSize = currentMemberOffset;
+  
   if (node->identifier_1->name == "Main") {
     if (node->declaration_list->size() != 0) {
       typeError(main_class_members_present);

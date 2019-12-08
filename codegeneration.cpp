@@ -64,7 +64,7 @@ void CodeGenerator::visitDeclarationNode(DeclarationNode* node) {
 void CodeGenerator::visitReturnStatementNode(ReturnStatementNode* node) {
 	std::cout << "  # Return Statement" << std::endl;
 	node->visit_children(this);
-	std::cout << "  pop %eax" << endl;
+	std::cout << "  pop %eax" << std::endl;
 }
 
 void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
@@ -89,22 +89,28 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 		}
 	}
 	else {
-		// Class variable or superclass variable
-
-		// f = new C0(12)
-		// f is address of object
-		// 1) what class type is f? (use type check)
-		// 2) where on stack is f located?
-		// 3) what is inside f?
 
 		auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
-		int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
-
-		// (*(*classTable)[className].members)[node->identifier_2->name]
-
+		int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offse
+		
 		int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
-		std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
-		std::cout << "  add $4, %esp" << std::endl;
+		auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
+		if (localVars.find(node->identifier_1->name) != localVars.end()) {
+			// local var
+			int localVarOffset = localVars[node->identifier_1->name].offset;
+			std::cout << "  mov " << localVarOffset << "(%ebp), %eax" << std::endl;
+			std::cout << "  mov 0(%esp), " << offset << "(%eax)" << std::endl;
+			std::cout << "  add $4, %esp" << std::endl;
+		}
+		else {
+			// member var
+			auto memberOff = (*(*classTable)[className].members)[node->identifier_1->name].offset;
+			std::cout << "  mov 8(%ebp), %eax" << std::endl;
+			std::cout << "  mov " << memberOff << "(%eax), %eax" << std::endl;
+			std::cout << "  mov 0(%esp), " << offset <<  "(%eax)" << std::endl;
+			std::cout << "  add $4, %esp" << std::endl;	
+		}
+		
 	}
 }
 
@@ -321,11 +327,9 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 	for(; i != node->expression_list->rend(); ++i) {
 		(*i)->accept(this);
 	}
-	// std::cout << "  push TODO" << std::endl;
-
 
 	if (node->identifier_2 == NULL) {
-		std::cout << "  push 4(%ebp)" <<std::endl;
+		std::cout << "  push 8(%ebp)" <<std::endl;
 		std::string className = currentClassName;
 		
 		while (className != "") {
@@ -337,7 +341,19 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 		}
 	}
 	else {
-		std::cout << "  push " <<"STUB" << std::endl;
+		
+		auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
+		if (localVars.find(node->identifier->name) != localVars.end()) {
+			// local var
+			int localVarOffset = localVars[node->identifier->name].offset;
+			std::cout << "  push " << localVarOffset << "(%ebp)" << std::endl;
+		}
+		else {
+			// member var
+			auto memberOff = (*(*classTable)[className].members)[node->identifier->name].offset;
+			std::cout << "  mov 8(%ebp), %eax" << std::endl;
+			std::cout << "  push " << memberOff << "(%eax)" << std::endl;
+		}
 		auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
 		
 		while (className != "") {
@@ -369,7 +385,7 @@ void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
 	while (className != "") {
 		if ((*classTable)[className].members->find(node->identifier_2->name) != (*classTable)[className].members->end()) {
 
-			int memberOffset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
+			int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 			// std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
 			// std::cout << "  add $4, %esp" << std::endl;
 			
@@ -378,14 +394,15 @@ void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
 			if (localVars.find(node->identifier_1->name) != localVars.end()) {
 				// local var
 				int localVarOffset = localVars[node->identifier_1->name].offset;
-				std::cout << "  push " << localVarOffset << "(%ebp)" << std::endl;
-				std::cout << "  add " << memberOffset << ", (%esp)" << std::endl;
-				std::cout << "  add $4, (%esp)" << std::endl;
-				std::cout << "  push -4(%esp)" << std::endl;
+				std::cout << "  mov " << localVarOffset << "(%ebp), %eax" << std::endl;
+				std::cout << "  push " << offset << "(%eax)" << std::endl;
 			}
 			else {
 				// member var
-				std::cout << "  push 4(%ebp)" << std::endl;
+				auto memberOff = (*(*classTable)[className].members)[node->identifier_1->name].offset;
+				std::cout << "  mov 8(%ebp), %eax" << std::endl;
+				std::cout << "  mov " << memberOff << "(%eax), %eax" << std::endl;
+				std::cout << "  push " << offset <<  "(%eax)" << std::endl;
 			}
 
 			break;
@@ -396,8 +413,19 @@ void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
 
 void CodeGenerator::visitVariableNode(VariableNode* node) {
 	// check if local or member variable
-	
-	std::cout << "  push $" << "STUB" << std::endl;
+	auto className = currentClassName;
+	auto localVars = (*(*(*classTable)[className].methods)[currentMethodName].variables);
+	if (localVars.find(node->identifier->name) != localVars.end()) {
+		// local var
+		int localVarOffset = localVars[node->identifier->name].offset;
+		std::cout << "  push " << localVarOffset << "(%ebp)" << std::endl;
+	}
+	else {
+		// member var
+		auto memberOff = (*(*classTable)[className].members)[node->identifier->name].offset;
+		std::cout << "  mov 8(%ebp), %eax" << std::endl;
+		std::cout << "  push " << memberOff << "(%eax)" << std::endl;
+	}
 }
 
 void CodeGenerator::visitIntegerLiteralNode(IntegerLiteralNode* node) {
