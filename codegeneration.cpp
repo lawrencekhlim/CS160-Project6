@@ -130,15 +130,18 @@ void CodeGenerator::visitIfElseNode(IfElseNode* node) {
 
 	std::cout << "  # IfElse" << std::endl;
 	std::cout << "  pop %edx" << std::endl;
-	std::cout << "  cmp %edx, $1" << std::endl;
+	std::cout << "  mov $1, %eax" << std::endl;
+	std::cout << "  cmp %edx, %eax" << std::endl;
 	std::cout << "  je L" << l1 << std::endl;
-
-	auto i = node->statement_list_2->begin();
-	for(; i != node->statement_list_2->end(); ++i) {
-		(*i)->accept(this);
+	
+	if (node->statement_list_2 != NULL){
+		auto i = node->statement_list_2->begin();
+		for(; i != node->statement_list_2->end(); ++i) {
+			(*i)->accept(this);
+		}
 	}
 
-	std::cout << "  goto L" << l2 << std::endl;
+	std::cout << "  jmp L" << l2 << std::endl;
 	std::cout << "  L" << l1 << ":" << std::endl;
 
 	auto j = node->statement_list_1->begin();
@@ -167,7 +170,7 @@ void CodeGenerator::visitWhileNode(WhileNode* node) {
 		(*i)->accept(this);
 	}
 
-	std::cout << "  goto L" << l1 << std::endl;
+	std::cout << " jmp L" << l1 << std::endl;
 	std::cout << "  L" << l2 << ":" << std::endl;
 }
 
@@ -254,10 +257,10 @@ void CodeGenerator::visitGreaterNode(GreaterNode* node) {
 	std::cout << "  # Greater" << std::endl;
 	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
-	std::cout << "  cmp %eax, %edx" << l1 << std::endl;
+	std::cout << "  cmp %eax, %edx" << std::endl;
 	std::cout << "  jg L" << l1 << std::endl;
 	std::cout << "  push $0" << std::endl;
-	std::cout << "  goto L" << l2 << std::endl;
+	std::cout << "  jmp L" << l2 << std::endl;
 	std::cout << "  L" << l1 << ": push $1" << std::endl;
 	std::cout << "  L" << l2 << ": " << std::endl;
 }
@@ -270,10 +273,10 @@ void CodeGenerator::visitGreaterEqualNode(GreaterEqualNode* node) {
 	std::cout << "  # GreaterEqual" << std::endl;
 	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
-	std::cout << "  cmp %eax, %edx" << l1 << std::endl;
+	std::cout << "  cmp %eax, %edx" << std::endl;
 	std::cout << "  jge L" << l1 << std::endl;
 	std::cout << "  push $0" << std::endl;
-	std::cout << "  goto L" << l2 << std::endl;
+	std::cout << "  jmp L" << l2 << std::endl;
 	std::cout << "  L" << l1 << ": push $1" << std::endl;
 	std::cout << "  L" << l2 << ": " << std::endl;
 }
@@ -286,10 +289,10 @@ void CodeGenerator::visitEqualNode(EqualNode* node) {
 	std::cout << "  # Equal" << std::endl;
 	std::cout << "  pop %edx" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
-	std::cout << "  cmp %edx, %eax" << l1 << std::endl;
+	std::cout << "  cmp %edx, %eax" << std::endl;
 	std::cout << "  je L" << l1 << std::endl;
 	std::cout << "  push $0" << std::endl;
-	std::cout << "  goto L" << l2 << std::endl;
+	std::cout << "  jmp L" << l2 << std::endl;
 	std::cout << "  L" << l1 << ": push $1" << std::endl;
 	std::cout << "  L" << l2 << ": " << std::endl;
 }
