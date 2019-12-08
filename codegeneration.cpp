@@ -364,7 +364,34 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 }
 
 void CodeGenerator::visitMemberAccessNode(MemberAccessNode* node) {
-	// WRITEME: Replace with code if necessary
+	auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
+
+	while (className != "") {
+		if ((*classTable)[className].members->find(node->identifier_2->name) != (*classTable)[className].members->end()) {
+
+			int memberOffset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
+			// std::cout << "  mov 0(%esp), " << offset << "(%ebp)" << std::endl;
+			// std::cout << "  add $4, %esp" << std::endl;
+			
+			auto className = currentClassName;
+			auto localVars = (*(*(*classTable)[className].methods)[currentMethodName].variables);
+			if (localVars.find(node->identifier_1->name) != localVars.end()) {
+				// local var
+				int localVarOffset = localVars[node->identifier_1->name].offset;
+				std::cout << "  push " << localVarOffset << "(%ebp)" << std::endl;
+				std::cout << "  add " << memberOffset << ", (%esp)" << std::endl;
+				std::cout << "  add $4, (%esp)" << std::endl;
+				std::cout << "  push -4(%esp)" << std::endl;
+			}
+			else {
+				// member var
+				std::cout << "  push 4(%ebp)" << std::endl;
+			}
+
+			break;
+		}
+		className = (*classTable)[className].superClassName;
+	}
 }
 
 void CodeGenerator::visitVariableNode(VariableNode* node) {
