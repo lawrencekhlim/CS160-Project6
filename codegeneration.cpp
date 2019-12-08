@@ -367,15 +367,17 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 	else {
 		
 		auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
-		auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
+		std::string className;
 
 		if (localVars.find(node->identifier_1->name) != localVars.end()) {
 			// local var
+			className = localVars[node->identifier_1->name].type.objectClassName;
 			int localVarOffset = localVars[node->identifier_1->name].offset;
 			std::cout << "  push " << localVarOffset << "(%ebp)" << std::endl;
 		}
 		else {
 			// member var
+			className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
 			auto memberOff = (*(*classTable)[className].members)[node->identifier_1->name].offset;
 			std::cout << "  mov 8(%ebp), %eax" << std::endl;
 			std::cout << "  push " << memberOff << "(%eax)" << std::endl;
