@@ -461,12 +461,8 @@ void TypeCheck::visitMethodCallNode(MethodCallNode* node) {
   node->visit_children(this);
   if (node->identifier_2 == NULL) {
     // local method
-    if (currentMethodTable->find(node->identifier_1->name) == currentMethodTable->end()) {
-      // Not found
-      typeError (undefined_method);
-    }
 
-    MethodInfo mi = (*currentMethodTable)[node->identifier_1->name];
+    MethodInfo mi = verifyMethodsFromClass(this, node->identifier_1, currentClassName);
 
     if (node->expression_list->size() != mi.parameters->size()) {
       typeError (argument_number_mismatch);
