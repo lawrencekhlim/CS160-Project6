@@ -92,25 +92,30 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 		}
 	}
 	else {
-
-		auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
-		int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
-		
-		int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 		auto localVars = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
 		if (localVars.find(node->identifier_1->name) != localVars.end()) {
+			auto className = localVars[node->identifier_1->name].type.objectClassName;
+			int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
+		
+			int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 			// local var
 			int localVarOffset = localVars[node->identifier_1->name].offset;
 			std::cout << "  mov " << localVarOffset << "(%ebp), %eax" << std::endl;
-			std::cout << "  mov 0(%esp), " << offset << "(%eax)" << std::endl;
+			std::cout << "  mov 0(%esp), %edx" << std::endl;
+			std::cout << "  mov %edx, " << offset << "(%eax)" << std::endl;
 			std::cout << "  add $4, %esp" << std::endl;
 		}
 		else {
+			auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
+			int memberOffset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
+		
+			int offset = (*(*classTable)[className].members)[node->identifier_2->name].offset;
 			// member var
 			auto memberOff = (*(*classTable)[className].members)[node->identifier_1->name].offset;
 			std::cout << "  mov 8(%ebp), %eax" << std::endl;
 			std::cout << "  mov " << memberOff << "(%eax), %eax" << std::endl;
-			std::cout << "  mov 0(%esp), " << offset <<  "(%eax)" << std::endl;
+			std::cout << "  mov 0(%esp), %edx" << std::endl;
+			std::cout << "  mov %edx, " << offset <<  "(%eax)" << std::endl;
 			std::cout << "  add $4, %esp" << std::endl;	
 		}
 		
@@ -473,10 +478,12 @@ void CodeGenerator::visitNewNode(NewNode* node) {
 		std::cout << "  push %eax" << std::endl;
 		std::cout << "  push %ecx" << std::endl;
 		std::cout << "  push %edx" << std::endl;
-
-		auto i = node->expression_list->rbegin();
-		for(; i != node->expression_list->rend(); ++i) {
-			(*i)->accept(this);
+		
+		if (node->expression_list != NULL) {
+			auto i = node->expression_list->rbegin();
+			for(; i != node->expression_list->rend(); ++i) {
+				(*i)->accept(this);
+			}
 		}
 
 		std::cout << "  push $" << size << std::endl;
