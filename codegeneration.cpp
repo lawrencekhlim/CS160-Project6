@@ -31,7 +31,7 @@ void CodeGenerator::visitMethodNode(MethodNode* node) {
 	std::cout << "  push %ebp" << std::endl;
 	std::cout << "  mov %esp, %ebp" << std::endl;
 	int offset = 4*(*(*classTable)[currentClassName].methods)[currentMethodName].localsSize;
-	std::cout << "  sub "<< offset  <<", %esp" << std::endl;
+	std::cout << "  sub $"<< offset  <<", %esp" << std::endl;
 
 	std::cout << "  push %ebx" << std::endl;
 	std::cout << "  push %esi" << std::endl;
@@ -43,7 +43,7 @@ void CodeGenerator::visitMethodNode(MethodNode* node) {
 	std::cout << "  pop %esi" << std::endl;
 	std::cout << "  pop %ebx" << std::endl;
 	
-	std::cout << "  add %esp, " << offset << std::endl;
+	std::cout << "  add %esp, $" << offset << std::endl;
 	std::cout << "  pop %ebp" << std::endl;
 	std::cout << "  ret" << std::endl;
 }
@@ -301,7 +301,7 @@ void CodeGenerator::visitOrNode(OrNode* node) {
 void CodeGenerator::visitNotNode(NotNode* node) {
 	node->visit_children(this);
 	std::cout << "  # Not" << std::endl;
-	std::cout << "  mov %edx, 1" << std::endl;
+	std::cout << "  mov %edx, $1" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
 	std::cout << "  xor %edx, %eax" << std::endl;
 	std::cout << "  push %eax" << std::endl;
@@ -311,7 +311,7 @@ void CodeGenerator::visitNegationNode(NegationNode* node) {
 	node->visit_children(this);
 	std::cout << "  # Negation" << std::endl;
 	std::cout << "  pop %edx" << std::endl;
-	std::cout << "  mov %eax, 0" << std::endl;
+	std::cout << "  mov %eax, $0" << std::endl;
 	std::cout << "  sub %edx, %eax" << std::endl;
 	std::cout << "  push %eax" << std::endl;
 }
