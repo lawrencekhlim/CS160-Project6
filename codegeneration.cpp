@@ -319,6 +319,8 @@ void CodeGenerator::visitMethodCallNode(MethodCallNode* node) {
 	for(; i != node->expression_list->rend(); ++i) {
 		(*i)->accept(this);
 	}
+	// std::cout << "  push TODO" << std::endl;
+
 
 	if (node->identifier_2 == NULL) {
 		std::string className = currentClassName;
@@ -364,11 +366,47 @@ void CodeGenerator::visitIntegerLiteralNode(IntegerLiteralNode* node) {
 }
 
 void CodeGenerator::visitBooleanLiteralNode(BooleanLiteralNode* node) {
-	// WRITEME: Replace with code if necessary
+	std::c	
 }
 
 void CodeGenerator::visitNewNode(NewNode* node) {
-	// WRITEME: Replace with code if necessary
+	int size = (*classTable)[node->identifier->name].membersSize;
+
+	// Constructor doesn't exist
+	ClassInfo class_info = (*classTable)[node->identifier->name];
+	if (class_info.methods->find(className) == class_info.methods->end()) {
+		std::cout << "  push $" << size << std::endl;
+		std::cout << "  call malloc" << std::endl;
+		std::cout << "  add $4, %esp" << std::endl;
+		std::cout << "  push %eax" << std::endl;
+	}
+	else {
+		std::cout << "  # NewNode" << std::endl;
+		std::cout << "  push %eax" << std::endl;
+		std::cout << "  push %ecx" << std::endl;
+		std::cout << "  push %edx" << std::endl;
+
+		auto i = node->expression_list->rbegin();
+		for(; i != node->expression_list->rend(); ++i) {
+			(*i)->accept(this);
+		}
+
+		std::cout << "  push $" << size << std::endl;
+		std::cout << "  call malloc" << std::endl;
+		std::cout << "  add $4, %esp" << std::endl;
+		std::cout << "  push %eax" << std::endl;
+
+		std::cout << "  call " << node->identifier->name << "_" << node->identifier->name << std::endl;
+
+		// Below is deallocating parameters
+		std::cout << "  mov (%esp), %ecx" << std::endl;
+		std::cout << "  add %esp, " << 4 * (node->expression_list->size() + 1) << std::endl; 
+		std::cout << "  pop %edx" << std::endl;
+		std::cout << "  pop %ecx" << std::endl;
+		std::cout << "  pop %eax" << std::endl;
+		
+		std::cout << "  mov %ecx, (%esp)" << std::endl;
+	}
 }
 
 void CodeGenerator::visitIntegerTypeNode(IntegerTypeNode* node) {
