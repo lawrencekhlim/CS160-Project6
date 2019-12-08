@@ -31,7 +31,7 @@ void CodeGenerator::visitMethodNode(MethodNode* node) {
 	std::cout << "  push %ebp" << std::endl;
 	std::cout << "  mov %esp, %ebp" << std::endl;
 	int offset = 4*(*(*classTable)[currentClassName].methods)[currentMethodName].localsSize;
-	std::cout << "  sub %esp, " << offset << std::endl;
+	std::cout << "  sub "<< offset  <<", %esp" << std::endl;
 
 	std::cout << "  push %ebx" << std::endl;
 	std::cout << "  push %esi" << std::endl;
