@@ -451,6 +451,7 @@ void CodeGenerator::visitBooleanLiteralNode(BooleanLiteralNode* node) {
 }
 
 void CodeGenerator::visitNewNode(NewNode* node) {
+	
 	int size = (*classTable)[node->identifier->name].membersSize;
 
 	// Constructor doesn't exist
