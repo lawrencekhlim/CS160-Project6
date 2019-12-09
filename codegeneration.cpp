@@ -324,7 +324,7 @@ void CodeGenerator::visitOrNode(OrNode* node) {
 void CodeGenerator::visitNotNode(NotNode* node) {
 	node->visit_children(this);
 	std::cout << "  # Not" << std::endl;
-	std::cout << "  mov %edx, $1" << std::endl;
+	std::cout << "  mov $1, %edx" << std::endl;
 	std::cout << "  pop %eax" << std::endl;
 	std::cout << "  xor %edx, %eax" << std::endl;
 	std::cout << "  push %eax" << std::endl;
@@ -334,7 +334,7 @@ void CodeGenerator::visitNegationNode(NegationNode* node) {
 	node->visit_children(this);
 	std::cout << "  # Negation" << std::endl;
 	std::cout << "  pop %edx" << std::endl;
-	std::cout << "  mov %eax, $0" << std::endl;
+	std::cout << "  mov $0, %eax" << std::endl;
 	std::cout << "  sub %edx, %eax" << std::endl;
 	std::cout << "  push %eax" << std::endl;
 }
