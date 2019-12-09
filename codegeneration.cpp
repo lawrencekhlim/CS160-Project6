@@ -100,9 +100,8 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 			// local var
 			int localVarOffset = localVars[node->identifier_1->name].offset;
 			std::cout << "  mov " << localVarOffset << "(%ebp), %eax" << std::endl;
-			std::cout << "  mov 0(%esp), %edx" << std::endl;
+			std::cout << "  pop %edx" << std::endl;
 			std::cout << "  mov %edx, " << offset << "(%eax)" << std::endl;
-			std::cout << "  add $4, %esp" << std::endl;
 		}
 		else {
 			auto className = (*(*classTable)[currentClassName].members)[node->identifier_1->name].type.objectClassName;
@@ -112,9 +111,8 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 			auto memberOff = (*(*classTable)[className].members)[node->identifier_1->name].offset;
 			std::cout << "  mov 8(%ebp), %eax" << std::endl;
 			std::cout << "  mov " << memberOff << "(%eax), %eax" << std::endl;
-			std::cout << "  mov 0(%esp), %edx" << std::endl;
+			std::cout << "  pop %edx" << std::endl;
 			std::cout << "  mov %edx, " << offset <<  "(%eax)" << std::endl;
-			std::cout << "  add $4, %esp" << std::endl;	
 		}
 		
 	}
