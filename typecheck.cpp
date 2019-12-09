@@ -152,8 +152,8 @@ void TypeCheck::visitClassNode(ClassNode* node) {
   currentMemberOffset = 0;
   currentParameterOffset = 0;
   currentLocalOffset = 0;
-  (*classTable)[currentClassName].membersSize = 0;
   currentClassName = node->identifier_1->name;
+  (*classTable)[currentClassName].membersSize = 0;
   currentMethodTable = new MethodTable();
   currentVariableTable = new VariableTable();
 
