@@ -81,15 +81,14 @@ void CodeGenerator::visitAssignmentNode(AssignmentNode* node) {
 		auto localTable = (*(*(*classTable)[currentClassName].methods)[currentMethodName].variables);
 		if (localTable.find(node->identifier_1->name) != localTable.end()) {
 			int offset = localTable[node->identifier_1->name].offset;
-			std::cout << "  mov 0(%esp), %eax" << std::endl;
+			std::cout << "  pop %eax" << std::endl;
 			std::cout << "  mov %eax, " << offset << "(%ebp)" << std::endl;
-			std::cout << "  add $4, %esp" << std::endl;
 		}
 		else {
 			int offset = (*(*classTable)[currentClassName].members)[node->identifier_1->name].offset;
-			std::cout << "  mov 0(%esp), %eax"  << std::endl;
-			std::cout << "  mov %eax, " << offset << "(%ebp)" << std::endl;
-			std::cout << "  add $4, %esp" << std::endl;
+			std::cout << "  mov 8(%ebp), %ebx" << std::endl;
+			std::cout << "  pop %eax"  << std::endl;
+			std::cout << "  mov %eax, " << offset << "(%ebx)" << std::endl;
 		}
 	}
 	else {
